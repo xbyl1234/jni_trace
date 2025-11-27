@@ -24,17 +24,33 @@ public:
         const char *process = env->GetStringUTFChars(args->nice_name, nullptr);
         this->process = process;
         env->ReleaseStringUTFChars(args->nice_name, process);
-        allowPkg = ReadFile("/data/pkg");
-        allowPkg = allowPkg.replace("\n", "");
-        allowPkg = allowPkg.replace("\r", "");
-        logi("inject pkg list: %s", pkg.c_str());
     }
 
     void postAppSpecialize(const AppSpecializeArgs *args) {
+        allowPkg = ReadFile("/data/pkg");
+        if (allowPkg.empty()) {
+            loge("pkg empty %d", errno);
+            return;
+        }
+        allowPkg = replace_all(allowPkg, "\n", "");
+        allowPkg = replace_all(allowPkg, "\r", "");
+        logi("pkg list: %s", allowPkg.c_str());
         if (process.find(allowPkg) == -1) {
             return;
         }
-        logi("inject to %s", allowPkg.c_str());
+        auto handle = dlopen("/data/libanalyse.so", RTLD_NOW);
+        if (handle != nullptr) {
+            logi("inject to %s", allowPkg.c_str());
+        } else {
+            loge("inject to %s error %d", allowPkg.c_str(), errno);
+            return;
+        }
+        void *inject_entry = dlsym(handle, "inject_entry");
+        if (!inject_entry) {
+            loge("inject_entry error %d", errno);
+            return;
+        }
+        ((void (*)(JNIEnv *)) inject_entry)(env);
     }
 
 private:

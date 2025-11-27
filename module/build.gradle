@@ -33,7 +33,8 @@ android {
         prefab true
     }
     tasks.configureEach { task ->
-        if (task.name == 'assembleDebug' || task.name == 'assembleRelease') {
+        printf("----" + task.name)
+        if (task.name == 'copyDebugJniLibsProjectOnly' || task.name == 'assembleRelease') {
             task.doLast {
                 project.BuildMagiskPlug()
             }
