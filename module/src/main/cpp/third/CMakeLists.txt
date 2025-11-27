@@ -12,17 +12,3 @@ file(GLOB utils_src
 add_library(libutils
         STATIC
         ${utils_src})
-
-set(DobbyHome "./dobby")
-#set(GENERATE_SHARED OFF)
-#set(DOBBY_DEBUG OFF)
-add_subdirectory(${DobbyHome} dobby)
-
-file(GLOB byopen_src
-        "byopen/*.h"
-        "byopen/*.cpp"
-        "byopen/*.c")
-
-add_library(libbyopen
-        STATIC
-        ${byopen_src})

@@ -10,8 +10,6 @@ find_library(log-lib log)
 find_package(cxx REQUIRED CONFIG)
 link_libraries(cxx::cxx)
 
-add_subdirectory(./base)
-add_subdirectory(./global)
 add_subdirectory(third/log2file)
 add_subdirectory(./third)
 
@@ -19,9 +17,6 @@ file(GLOB analyse_src
         "*.h"
         "*.hpp"
         "*.cpp"
-
-        "jni_trace/*.cpp"
-        "jni_trace/*.h"
 )
 
 add_library(
@@ -32,12 +27,7 @@ add_library(
 
 target_link_libraries(
         analyse
-#        ${LINK_DIR}/libcxx.a
-        dobby
-        libbase
         libutils
-        libbyopen
-        global
         log2file
         ${log-lib}
 )
