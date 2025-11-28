@@ -34,15 +34,14 @@ public:
         }
         allowPkg = replace_all(allowPkg, "\n", "");
         allowPkg = replace_all(allowPkg, "\r", "");
-        logi("pkg list: %s", allowPkg.c_str());
         if (process.find(allowPkg) == -1) {
             return;
         }
         auto handle = dlopen("/data/libanalyse.so", RTLD_NOW);
         if (handle != nullptr) {
-            logi("inject to %s", allowPkg.c_str());
+            logi("inject to %s", process.c_str());
         } else {
-            loge("inject to %s error %d", allowPkg.c_str(), errno);
+            loge("inject to %s error %d", process.c_str(), errno);
             return;
         }
         void *inject_entry = dlsym(handle, "inject_entry");
@@ -50,7 +49,7 @@ public:
             loge("inject_entry error %d", errno);
             return;
         }
-        ((void (*)(JNIEnv *)) inject_entry)(env);
+        ((void (*)(JNIEnv *, const char *)) inject_entry)(env, this->process.c_str());
     }
 
 private:
